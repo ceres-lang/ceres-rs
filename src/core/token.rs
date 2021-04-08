@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Token {
     // Operators
     Plus,
@@ -6,12 +7,20 @@ pub enum Token {
     Slash,
     Dot,
     Comma,
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
     Colon,
     Semicolon,
     Not,
     Equals,
     EqualsEquals,
     NotEquals,
+    Less,
+    Greater,
+    LesserEqual,
+    GreaterEqual,
 
     // Reserved Keywords
     Case,
@@ -23,7 +32,13 @@ pub enum Token {
     For,
     Fn,
 
+    TypeInt,
+    TypeBool,
+    TypeChar,
+    TypeStr,
+
     // Types
+    Identifier(String),
     IntLit(i32),
     StringLit(String),
     CharLit(char)

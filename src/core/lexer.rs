@@ -50,17 +50,28 @@ impl Lexer {
 
     fn peek(&self) -> char {
         // TODO: maybe don't die but rather return an optional?
-        self.src.chars().nth(self.pos).expect("reached eof")
+        if self.pos >= self.src.len() { return '\0'; }
+        else { return self.src.chars().nth(self.pos).unwrap(); }
+    }
+
+    /// Push the token and advance the position in the stream
+    fn push_advance(&mut self, token: Token) {
+        self.tokens.push(token);
+        self.advance();
     }
 
     /// Pushes `right` if the next character in the stream is `next_char`, else pushes
     /// `left` as a token.
+    /// 
+    /// This little manuever is gonna save us 100 lines :')
     fn push_if_next_ahead(&mut self, next_char: char, left: Token, right: Token) {
         if self.peek_next(1) == next_char {
             self.tokens.push(right);
+            self.advance();
         }
         else {
             self.tokens.push(left);
+            self.advance();
         }
     }
 
@@ -82,12 +93,27 @@ impl Lexer {
             self.advance();
         }
 
+        self.advance();
         self.tokens.push(Token::StringLit(lexeme));
+    }
+
+    fn scan_char_lit(&mut self) {
+        let mut lexeme = String::new();
+
+        self.advance();
+        while self.peek() != '\'' {
+            //println!("char lit {}", self.peek());
+            lexeme.push(self.peek());
+            self.advance();
+        }
+
+        let value = lexeme.parse::<char>().expect("error: character literals can only hold 1 character!");
+        self.advance();
+        self.tokens.push(Token::CharLit(value));
     }
 
     fn scan_number(&mut self) {
         // TODO: add support for 0x and 0b
-
         let mut lexeme = String::new();
 
         while self.peek().is_ascii_digit() {
@@ -95,7 +121,7 @@ impl Lexer {
             self.advance();
         }
 
-        let value = lexeme.parse().expect("invalid integer literal");
+        let value = lexeme.parse::<i32>().expect("error: invalid integer literal");
         self.tokens.push(Token::IntLit(value));
     }
 
@@ -118,6 +144,7 @@ impl Lexer {
                 "else" => self.tokens.push(Token::Else),
                 "for" => self.tokens.push(Token::For),
                 "fn" => self.tokens.push(Token::Fn),
+                "while" => self.tokens.push(Token::While)
                 _ => {}
             }
         }
@@ -140,9 +167,9 @@ impl Lexer {
 
         while !self.is_eof() {
             match self.peek() {
-                '+' => self.tokens.push(Token::Plus),
-                '-' => self.tokens.push(Token::Minus),
-                '*' => self.tokens.push(Token::Star),
+                '+' => self.push_advance(Token::Plus),
+                '-' => self.push_advance(Token::Minus),
+                '*' => self.push_advance(Token::Star),
                 '/' => {
                     // Ignore comments
                     if self.peek_next(1) == '/' {
@@ -154,38 +181,38 @@ impl Lexer {
                         self.tokens.push(Token::Slash);
                     }
                 }
-                '.' => self.tokens.push(Token::Dot),
-                ',' => self.tokens.push(Token::Comma),
-                '(' => self.tokens.push(Token::LeftParen),
-                ')' => self.tokens.push(Token::RightParen),
-                '{' => self.tokens.push(Token::LeftBrace),
-                '}' => self.tokens.push(Token::RightBrace),
-                ':' => self.tokens.push(Token::Colon),
-                ';' => self.tokens.push(Token::Semicolon),
+                '.' => self.push_advance(Token::Dot),
+                ',' => self.push_advance(Token::Comma),
+                '(' => self.push_advance(Token::LeftParen),
+                ')' => self.push_advance(Token::RightParen),
+                '{' => self.push_advance(Token::LeftBrace),
+                '}' => self.push_advance(Token::RightBrace),
+                ':' => self.push_advance(Token::Colon),
+                ';' => self.push_advance(Token::Semicolon),
                 '!' => self.push_if_next_ahead('=', Token::Not, Token::NotEquals),
                 '=' => self.push_if_next_ahead('=', Token::Equals, Token::EqualsEquals),
                 '<' => self.push_if_next_ahead('=', Token::Less, Token::LesserEqual),
                 '>' => self.push_if_next_ahead('=', Token::Greater, Token::GreaterEqual),
+                '\'' => self.scan_char_lit(),
                 '"' => self.scan_string(),
                 _ => {
                     // Ignore any useless whitespace
                     if self.peek().is_whitespace() {
                         self.advance();
                     }
-
-                    if self.peek().is_ascii_alphabetic() {
+                    else if self.peek().is_ascii_alphabetic() {
                         self.scan_kw_or_ident();
                     }
                     else if self.peek().is_ascii_digit() {
                         self.scan_number();
                     }
+
                 }
             }
-
-            self.advance();
         }
 
         for tok in &self.tokens {
+            // Print the tokens
             println!("{:#?}", tok);
         }
     }

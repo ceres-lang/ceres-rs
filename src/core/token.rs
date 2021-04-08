@@ -31,6 +31,7 @@ pub enum Token {
     Else,
     For,
     Fn,
+    While,
 
     TypeInt,
     TypeBool,

@@ -144,7 +144,7 @@ impl Lexer {
                 "else" => self.tokens.push(Token::Else),
                 "for" => self.tokens.push(Token::For),
                 "fn" => self.tokens.push(Token::Fn),
-                "while" => self.tokens.push(Token::While)
+                "while" => self.tokens.push(Token::While),
                 _ => {}
             }
         }
@@ -162,7 +162,7 @@ impl Lexer {
         }
     }
 
-    pub fn scan(&mut self) {
+    pub fn scan(mut self) -> Vec<Token> {
         println!("src: {}", self.src);
 
         while !self.is_eof() {
@@ -211,9 +211,6 @@ impl Lexer {
             }
         }
 
-        for tok in &self.tokens {
-            // Print the tokens
-            println!("{:#?}", tok);
-        }
+        self.tokens
     }
 }

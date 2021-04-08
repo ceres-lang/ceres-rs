@@ -1,0 +1,32 @@
+%precedence + 10
+%precedence - 10
+%precedence * 20
+%precedence / 20
+
+expr := int 
+     | identifier
+     | str_lit
+     | sum
+
+sum := expr "+" expr
+     | expr "-" expr
+     | expr "*" expr
+     | expr "/" expr
+
+# Variables
+var_decl := "def" identifier ":" (type "=" value | struct_decl) ";"
+var_assign := identifier "=" value ";"
+
+# Structs
+struct_decl := "struct" "=" struct_block
+struct_field := identifier ":" type ";"
+struct_block := "{" (struct_field)+ "}"
+
+# Atoms
+identifier := [A-Za-z_]+
+integer := ("0x"|"0b")? [0-9A-F]+
+str_lit := "\"" [str_delim^]+ "\""
+value := expr
+
+type := "int" | "str" | "bool"
+%comment "//[^\n]"

@@ -20,8 +20,10 @@ lazy_static! {
         "if",
         "elif",
         "else",
+        "exit",
         "for",
-        "fn"
+        "fn",
+        "while",
     ];
 }
 

@@ -175,7 +175,8 @@ impl Lexer {
                 '*' => self.push_advance(Token::Star),
                 '/' => {
                     // Ignore comments
-                    if self.peek_next(1) == '/' {
+                    self.advance();
+                    if self.peek() == '/' {
                         while self.peek() != '\n' {
                             self.advance();
                         }
@@ -200,7 +201,7 @@ impl Lexer {
                 '"' => self.scan_string(),
                 _ => {
                     // Ignore any useless whitespace
-                    if self.peek().is_whitespace() {
+                    if self.peek().is_whitespace() || self.peek() == '\t' || self.peek() == '\n' {
                         self.advance();
                     }
                     else if self.peek().is_ascii_alphabetic() {

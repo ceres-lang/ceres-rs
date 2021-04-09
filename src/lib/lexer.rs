@@ -3,7 +3,7 @@ use std::vec;
 use std::char;
 use lazy_static::lazy_static;
 
-use crate::core::Token;
+use crate::token::Token;
 
 lazy_static! {
     static ref TYPE_KEYWORDS: Vec<&'static str> = vec![

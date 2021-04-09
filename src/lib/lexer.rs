@@ -3,6 +3,7 @@ use std::vec;
 use std::char;
 use lazy_static::lazy_static;
 
+use crate::stream::PeekableStream;
 use crate::token::Token;
 
 lazy_static! {
@@ -25,6 +26,7 @@ lazy_static! {
         "for",
         "fn",
         "while",
+        "loop",
     ];
 }
 
@@ -34,6 +36,22 @@ pub struct Lexer {
     tokens: Vec<Token>
 }
 
+impl PeekableStream<char> for Lexer {
+    fn pos(&mut self) -> &mut usize {
+        // Return the mutable borrow of self.pos
+        &mut self.pos
+    }
+    
+    fn is_eos(&self) -> bool {
+        self.pos >= self.src.len()
+    }
+
+    fn peek(&self) -> char {
+        if self.is_eos() { return '\0'; }
+        self.src.chars().nth(self.pos).unwrap()
+    }
+}
+
 impl Lexer {
     pub fn new(src: &str) -> Lexer {
         Lexer {
@@ -41,17 +59,6 @@ impl Lexer {
             src: src.into(),
             tokens: vec![],
         }
-    }
-
-    /// Advances the position in the lexer
-    fn advance(&mut self) {
-        self.pos += 1
-    }
-
-    fn peek(&self) -> char {
-        // TODO: maybe don't die but rather return an optional?
-        if self.pos >= self.src.len() { return '\0'; }
-        else { return self.src.chars().nth(self.pos).unwrap(); }
     }
 
     /// Push the token and advance the position in the stream
@@ -78,10 +85,6 @@ impl Lexer {
     /// Returns the next character in the stream `ahead` times ahead
     fn peek_next(&self, ahead: usize) -> char {
         self.src.chars().nth(self.pos + ahead).expect("reached eof")
-    }
-
-    fn is_eof(&self) -> bool { 
-        self.pos >= self.src.len()
     }
 
     fn scan_string(&mut self) {
@@ -165,7 +168,7 @@ impl Lexer {
     pub fn scan(mut self) -> Vec<Token> {
         println!("src: {}", self.src);
 
-        while !self.is_eof() {
+        while !self.is_eos() {
             match self.peek() {
                 '+' => self.push_advance(Token::Plus),
                 '-' => self.push_advance(Token::Minus),

@@ -13,17 +13,3 @@ pub struct ValueNode<T> {
     value_type: ValueType,
     pub value: T
 }
-
-/// Implement the visitor pattern for nodes
-impl Visitable for ValueNode<i32> {
-    fn accept(_visitor: NodeVisitor) {
-
-    }
-}
-
-
-impl Visitable for ValueNode<String> {
-    fn accept(_visitor: NodeVisitor) {
-        
-    }
-}

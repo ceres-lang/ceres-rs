@@ -1,16 +1,9 @@
 use crate::token::Token;
 
-/// Base AST node
-pub struct Node {
+use crate::ast::value;
 
+/// Implement the visitor pattern for the AST
+/// https://rust-unofficial.github.io/patterns/patterns/behavioural/visitor.html
+pub trait Visitor<T> {
+    fn visit_value(&mut self, node: ValueNode) -> T;
 }
-
-pub struct NodeVisitor {}
-
-/// Implements the Visitor pattern on all AST nodes
-pub trait Visitable {
-    fn accept(visitor: NodeVisitor)
-}
-
-
-

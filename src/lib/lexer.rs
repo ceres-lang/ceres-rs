@@ -35,23 +35,6 @@ pub struct Lexer {
     src: String,
     tokens: Vec<Token>
 }
-
-impl PeekableStream<char> for Lexer {
-    fn pos(&mut self) -> &mut usize {
-        // Return the mutable borrow of self.pos
-        &mut self.pos
-    }
-    
-    fn is_eos(&self) -> bool {
-        self.pos >= self.src.len()
-    }
-
-    fn peek(&self) -> char {
-        if self.is_eos() { return '\0'; }
-        self.src.chars().nth(self.pos).unwrap()
-    }
-}
-
 impl Lexer {
     pub fn new(src: &str) -> Lexer {
         Lexer {
@@ -59,6 +42,19 @@ impl Lexer {
             src: src.into(),
             tokens: vec![],
         }
+    }
+
+    fn advance(&mut self) {
+        self.pos += 1
+    }
+
+    fn is_eos(&self) -> bool {
+        self.pos >= self.tokens.len()
+    }
+
+    fn peek(&self) -> char {
+        if self.is_eos() { return '\0'; }
+        self.src.chars().nth(self.pos).unwrap()
     }
 
     /// Push the token and advance the position in the stream

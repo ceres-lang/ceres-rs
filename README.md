@@ -10,7 +10,7 @@ cargo run
 ```
 
 ## Goals
-- [ ] Lexical Analysis
+- [x] Lexical Analysis
 - [ ] Parsing
 - [ ] AST
 - [ ] Type checking

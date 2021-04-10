@@ -3,7 +3,7 @@ use std::vec;
 use std::char;
 use lazy_static::lazy_static;
 
-use crate::stream::PeekableStream;
+// use crate::stream::PeekableStream;
 use crate::token::Token;
 
 lazy_static! {
@@ -49,7 +49,7 @@ impl Lexer {
     }
 
     fn is_eos(&self) -> bool {
-        self.pos >= self.tokens.len()
+        self.pos >= self.src.len()
     }
 
     fn peek(&self) -> char {

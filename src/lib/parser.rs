@@ -2,6 +2,7 @@ use crate::token::Token;
 
 // AST nodes
 use crate::ast;
+use crate::ast::IdentNode;
 use crate::ast::value::{ValueType, ValueNode};
 
 pub struct Parser {
@@ -30,6 +31,19 @@ impl Parser {
     fn peek(&self) -> Token {
         // clone to get the value *not* a borrow
         self.tokens.get(self.pos).cloned().unwrap()
+    }
+
+    pub fn parse_ident(&mut self) -> IdentNode {
+        let token = self.peek();
+        let mut name = String::new();
+
+        if let Token::Identifier(v) = token {
+            name = v;
+        }
+
+        let node = IdentNode::new(name);
+        self.advance();
+        node
     }
 
     pub fn parse_number(&mut self) -> ValueNode<i32> {
